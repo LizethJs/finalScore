@@ -1,16 +1,16 @@
-name: Analyze on SonarCloud
+name: SonarCloud Analysis
 
 on:
   push:
     branches:
-      - main  # O el nombre de tu rama si es diferente
+      - master  # Cambiar 'main' por 'master'
   pull_request:
     branches:
-      - main
+      - master  # Cambiar 'main' por 'master'
 
 jobs:
   sonarcloud:
-    name: SonarCloud Analysis
+    name: SonarCloud Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -26,15 +26,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.gradle', '**/*.xml') }}
+          key: ${{ runner.os }}-sonar-${{ hashFiles('**/sonar-project.properties') }}
           restore-keys: |
             ${{ runner.os }}-sonar-
 
       - name: Run SonarCloud analysis
-        uses: SonarSource/sonarcloud-github-action@v1
+        uses: sonarsource/sonarcloud-github-action@v1
         with:
-          organization: ${{ secrets.SONAR_ORG }}
-          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
