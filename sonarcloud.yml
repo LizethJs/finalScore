@@ -1,0 +1,39 @@
+name: Analyze on SonarCloud
+
+on:
+  push:
+    branches:
+      - main  # O el nombre de tu rama si es diferente
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Cache SonarCloud dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.gradle', '**/*.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-sonar-
+
+      - name: Run SonarCloud analysis
+        uses: SonarSource/sonarcloud-github-action@v1
+        with:
+          organization: ${{ secrets.SONAR_ORG }}
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
