@@ -3,34 +3,36 @@ name: SonarCloud
 on:
   push:
     branches:
-      - main  # O la rama que uses para tus despliegues principales
+      - main  # Asegúrate de que esta sea la rama correcta (puede ser 'master' o la rama en la que trabajas)
   pull_request:
     branches:
-      - main
+      - main  # Asegúrate de que esta sea la rama correcta
 
 jobs:
   sonarcloud:
-    name: Analyze with SonarCloud
+    name: Analyze on SonarCloud
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Setup JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
 
-    - name: Cache SonarCloud
-      uses: actions/cache@v3
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.java') }}
-        restore-keys: |
-          ${{ runner.os }}-sonar-
+      - name: Cache SonarCloud dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ hashFiles('**/*.gradle*', '**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-sonar-
 
-    - name: Run SonarCloud analysis
-      uses: SonarSource/sonarcloud-github-action@v2
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          distribution: ${{ github.ref }}  # Aquí debes asegurarte de que 'distribution' esté correctamente configurado
+
