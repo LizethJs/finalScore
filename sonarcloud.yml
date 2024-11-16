@@ -37,3 +37,4 @@ jobs:
           projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
